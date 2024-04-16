@@ -1,0 +1,8 @@
+{
+  "tasks": {
+    "build": "deno run -A ./dnt/build.ts"
+  },
+  "imports": {
+    "@deno/dnt": "jsr:@deno/dnt@^0.41.1"
+  }
+}
