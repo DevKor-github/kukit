@@ -1,7 +1,7 @@
 const firstDelimiter = `<input type="password" name="pw" id="_pw" value="" />`;
 const secondDelimiter = `<input type="hidden" name="direct_div"/>`;
 
-export async function getToken(id: string, password: string) {
+export async function getToken(id: string, password: string): Promise<string> {
   const { id: idKey, password: passwordKey, csrf, fake } = await (async () => {
     const res = await fetch(
       "https://portal.korea.ac.kr/front/Intro.kpd",

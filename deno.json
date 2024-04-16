@@ -1,4 +1,7 @@
 {
+  "name": "@kit/kukit",
+  "version": "0.0.2",
+  "exports": "./mod.ts",
   "tasks": {
     "build": "deno run -A ./dnt/build.ts"
   },
