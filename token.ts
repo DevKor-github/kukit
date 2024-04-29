@@ -2,11 +2,16 @@ const firstDelimiter = `<input type="password" name="pw" id="_pw" value="" />`;
 const secondDelimiter = `<input type="hidden" name="direct_div"/>`;
 
 export async function getToken(id: string, password: string): Promise<string> {
-  const { id: idKey, password: passwordKey, csrf, fake } = await (async () => {
-    const res = await fetch(
-      "https://portal.korea.ac.kr/front/Intro.kpd",
-      { headers: { referer: "https://portal.korea.ac.kr/front/Intro.kpd" } },
-    );
+  const {
+    id: idKey,
+    password: passwordKey,
+    csrf,
+    fake,
+    sessionId,
+  } = await (async () => {
+    const res = await fetch("https://portal.korea.ac.kr/front/Intro.kpd", {
+      headers: { referer: "https://portal.korea.ac.kr/front/Intro.kpd" },
+    });
     if (!res.ok) throw Error("Failed to fetch kupid/intro");
     const text = await res.text();
     const [_, b] = text.split(firstDelimiter);
@@ -30,10 +35,15 @@ export async function getToken(id: string, password: string): Promise<string> {
     const [, password] = passwordMatchArray;
     const [, csrf] = csrfMatchArray;
     const [, fake] = fakeElemMatchArray;
+    const cookies = res.headers.getSetCookie();
+    if (!cookies.length) throw Error("Unexpected length of set-cookie");
+    const parsed = cookies.map(parseSetCookie);
+    const sessionId = parsed.find(({ key }) => key === "PORTAL_SESSIONID");
+    if (!sessionId) throw Error("Failed to get sessionId from set-cookie result");
     if (!id || !password || !csrf || !fake) {
       throw Error("Failed to parse elements");
     }
-    return { id, password, csrf, fake };
+    return { id, password, csrf, fake, sessionId: sessionId.value };
   })();
 
   const token = await (async () => {
@@ -47,14 +57,16 @@ export async function getToken(id: string, password: string): Promise<string> {
       browser: "chrome",
     });
     const res = await fetch("https://portal.korea.ac.kr/common/Login.kpd", {
-      headers: { referer: "https://portal.korea.ac.kr/front/Intro.kpd" },
+      headers: {
+        referer: "https://portal.korea.ac.kr/front/Intro.kpd",
+        cookie: `PORTAL_SESSIONID=${sessionId}`,
+      },
       body,
       method: "POST",
       redirect: "manual",
     });
     if (res.status !== 302) throw Error("Failed to kupid/login");
     const cookies = res.headers.getSetCookie();
-    console.log(cookies);
     if (!cookies.length) throw Error("Unexpected length of set-cookie");
     const parsed = cookies.map(parseSetCookie);
     const token = parsed.find(({ key }) => key === "ssotoken");
