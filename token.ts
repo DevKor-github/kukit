@@ -59,7 +59,6 @@ export async function getToken(id: string, password: string): Promise<string> {
     const res = await fetch("https://portal.korea.ac.kr/common/Login.kpd", {
       headers: {
         referer: "https://portal.korea.ac.kr/front/Intro.kpd",
-        "Content-Type": "application/x-www-form-urlencoded",
         cookie: `PORTAL_SESSIONID=${sessionId}`,
       },
       body,
