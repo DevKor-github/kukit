@@ -18,10 +18,7 @@ export async function getToken(id: string, password: string): Promise<string> {
     if (!b) throw Error("Failed to parse kupid/intro @ 1st delimiter");
     const [c, d] = b.split(secondDelimiter);
     if (!d) throw Error("Failed to parse kupid/intro @ 2nd delimiter");
-    const elems = c
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
+    const elems = c.split("\n").map((line) => line.trim()).filter(Boolean);
     if (elems.length !== 4) {
       throw Error("Failed to parse kupid/intfo @ elem trimming");
     }
@@ -63,7 +60,7 @@ export async function getToken(id: string, password: string): Promise<string> {
       headers: {
         referer: "https://portal.korea.ac.kr/front/Intro.kpd",
         "Content-Type": "application/x-www-form-urlencoded",
-        Cookie: `PORTAL_SESSIONID=${sessionId}`,
+        cookie: `PORTAL_SESSIONID=${sessionId}`,
       },
       body,
       method: "POST",
