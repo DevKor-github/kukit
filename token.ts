@@ -1,7 +1,12 @@
 const firstDelimiter = `<input type="password" name="pw" id="_pw" value="" />`;
 const secondDelimiter = `<input type="hidden" name="direct_div"/>`;
 
-export async function getToken(id: string, password: string): Promise<string> {
+interface KupidSessionAuth {
+  token: string;
+  sessionId: string;
+}
+
+export async function getToken(id: string, password: string): Promise<KupidSessionAuth> {
   const {
     id: idKey,
     password: passwordKey,
@@ -74,7 +79,7 @@ export async function getToken(id: string, password: string): Promise<string> {
     return token.value;
   })();
 
-  return token;
+  return { token, sessionId };
 }
 
 function parseSetCookie(cookie: string) {
