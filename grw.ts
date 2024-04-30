@@ -144,6 +144,25 @@ export async function getSchedulesFromKupid(id: string, password: string): Promi
   );
 }
 
+/**
+ *
+ * @param id KUPID id
+ * @param password KUPID password
+ * @returns KUPID '학사일정' 공지사항 10개의 HTML string Array를 반환합니다.
+ */
+export async function getScholarFromKupid(id: string, password: string): Promise<string[]> {
+  const { token, sessionId } = await getToken(id, password);
+  const { grwSessionId, html } = await getNoticeListPage(token, sessionId, "88");
+  const params = parseNoticeParamsFromHTML(html);
+  const urls = params.map((param) => getNoticeUrl(token, param));
+  return Promise.all(
+    urls.map(async (url) => {
+      const html = await fetchNotice(token, sessionId, grwSessionId, url, "90");
+      return makeFilePathPublic(html);
+    })
+  );
+}
+
 function trim(str: string): string {
   return str.replace(/\<(.+)\>/g, "").replace(/(&nbsp;)+/g, " ");
 }
@@ -197,6 +216,37 @@ export function parseScheduleInfo(html: string): NoticeInfo {
   const rawDate = tableRows[1].split("<td>")[1].split("</td>")[0];
   if (!rawDate) throw Error("Failed to parse date");
   const date = trim(rawDate).trim().replace(/\n/g, "").replace(/\t/g, "").replace(/ /g, "");
+
+  const rawTitle = tableRows[4].match(/\<td colspan="\d"\>(.+)\<\/td\>/);
+  if (!rawTitle) throw Error("Failed to parse title");
+  const title = trim(rawTitle[1]);
+
+  const rawContent = tableRows.slice(5).join("");
+  const content = `<tbody>${rawContent}</tbody>`;
+  const rawId = html.match(/\<input type="hidden" name="index" value="(.+)"\/\>/);
+  if (!rawId) throw Error("Failed to parse id");
+  const id = rawId[1].trim();
+  const url = `https://portal.korea.ac.kr/front/IntroNotice/NMainNoticeContent.kpd?idx=${id}&seq=`;
+  return {
+    id,
+    title,
+    date,
+    writer,
+    content,
+    url,
+  };
+}
+
+export function parseScholarInfo(html: string): NoticeInfo {
+  const tableRows = html.split("<tr>").slice(1);
+  tableRows[tableRows.length - 1] = tableRows[tableRows.length - 1].split("</tr>")[0];
+  const rawWriter = tableRows[0].match(/\<td\>(.+)\<\/td\>/);
+  if (!rawWriter) throw Error("Failed to parse writer");
+  const writer = trim(rawWriter[1]);
+
+  const rawDate = tableRows[2].match(/\<td colspan="\d"\>(.+)\<\/td\>/);
+  if (!rawDate) throw Error("Failed to parse date");
+  const date = trim(rawDate[1]);
 
   const rawTitle = tableRows[4].match(/\<td colspan="\d"\>(.+)\<\/td\>/);
   if (!rawTitle) throw Error("Failed to parse title");
