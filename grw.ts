@@ -25,8 +25,12 @@ export interface NoticeInfo {
   url: string;
 }
 
-async function getNoticeListPage(token: string, session: string): Promise<GrwResponse> {
-  const url = `https://grw.korea.ac.kr/GroupWare/user/NoticeList.jsp?kind=11&compId=148&menuCd=340&language=ko&frame=&token=${token}&orgtoken=${token}`;
+async function getNoticeListPage(
+  token: string,
+  session: string,
+  kind: string
+): Promise<GrwResponse> {
+  const url = `https://grw.korea.ac.kr/GroupWare/user/NoticeList.jsp?kind=${kind}&compId=148&menuCd=340&language=ko&frame=&token=${token}&orgtoken=${token}`;
   const cookieString = `ssotoken=${token}; PORTAL_SESSIONID=${session};`;
   const response = await fetch(url, {
     headers: {
@@ -58,16 +62,33 @@ function parseNoticeParamsFromHTML(html: string): Array<NoticeViewParameters> {
     return { kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth };
   });
 }
+function parseScheduleParamsFromHTML(html: string): Array<NoticeViewParameters> {
+  const hrefs = html.match(/javascript\:view1\((.+)\);/g);
+  if (!hrefs) throw Error("Failed to parse html");
+
+  return hrefs.map((href) => {
+    const matchArray = href.match(/\d+/g);
+    if (!matchArray) throw Error("Failed to parse href");
+    const [_, kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth] = matchArray;
+    return { kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth };
+  });
+}
 
 function getNoticeUrl(token: string, params: NoticeViewParameters) {
   return `https://grw.korea.ac.kr/GroupWare/user/NoticeView.jsp?language=ko&WhereSelect=all&KeyWord=&tab=&temp=&JOB_MODE=Q&JOBMODE=I&hdCurrPage=1&hdListCount=100&hdPageCount=5&hdPageList=&userid=&index=${params.index}&message_id=${params.message_id}&replyTop=${params.replyTop}&replyPos=${params.replyPos}&replyTo=${params.replyTo}&rowReply=${params.rowReply}&depth=${params.depth}&kind=${params.kind}&type=0&mode=0&flag=&access_type=Y&calIndex=&token=${token}`;
 }
 
-async function fetchNotice(token: string, session: string, grwSession: string, url: string) {
+async function fetchNotice(
+  token: string,
+  session: string,
+  grwSession: string,
+  url: string,
+  kind: string
+) {
   const cookieString = `ssotoken=${token}; PORTAL_SESSIONID=${session}; GRW_SESSIONID=${grwSession};`;
   const response = await fetch(url, {
     headers: {
-      referer: "https://grw.korea.ac.kr/GroupWare/user/NoticeList.jsp?kind=11",
+      referer: `https://grw.korea.ac.kr/GroupWare/user/NoticeList.jsp?kind=${kind}`,
       cookie: cookieString,
     },
   });
@@ -92,13 +113,32 @@ function makeFilePathPublic(html: string) {
  */
 export async function getNoticesFromKupid(id: string, password: string): Promise<string[]> {
   const { token, sessionId } = await getToken(id, password);
-  const { grwSessionId, html } = await getNoticeListPage(token, sessionId);
+  const { grwSessionId, html } = await getNoticeListPage(token, sessionId, "11");
   const params = parseNoticeParamsFromHTML(html);
   const urls = params.map((param) => getNoticeUrl(token, param));
 
   return Promise.all(
     urls.map(async (url) => {
-      const html = await fetchNotice(token, sessionId, grwSessionId, url);
+      const html = await fetchNotice(token, sessionId, grwSessionId, url, "11");
+      return makeFilePathPublic(html);
+    })
+  );
+}
+
+/**
+ *
+ * @param id KUPID id
+ * @param password KUPID password
+ * @returns KUPID '학사일정' 공지사항 10개의 HTML string Array를 반환합니다.
+ */
+export async function getSchedulesFromKupid(id: string, password: string): Promise<string[]> {
+  const { token, sessionId } = await getToken(id, password);
+  const { grwSessionId, html } = await getNoticeListPage(token, sessionId, "89");
+  const params = parseScheduleParamsFromHTML(html);
+  const urls = params.map((param) => getNoticeUrl(token, param));
+  return Promise.all(
+    urls.map(async (url) => {
+      const html = await fetchNotice(token, sessionId, grwSessionId, url, "89");
       return makeFilePathPublic(html);
     })
   );
@@ -122,6 +162,41 @@ export function parseNoticeInfo(html: string): NoticeInfo {
   const rawDate = tableRows[2].match(/\<td colspan="\d"\>(.+)\<\/td\>/);
   if (!rawDate) throw Error("Failed to parse date");
   const date = trim(rawDate[1]);
+
+  const rawTitle = tableRows[4].match(/\<td colspan="\d"\>(.+)\<\/td\>/);
+  if (!rawTitle) throw Error("Failed to parse title");
+  const title = trim(rawTitle[1]);
+
+  const rawContent = tableRows.slice(5).join("");
+  const content = `<tbody>${rawContent}</tbody>`;
+  const rawId = html.match(/\<input type="hidden" name="index" value="(.+)"\/\>/);
+  if (!rawId) throw Error("Failed to parse id");
+  const id = rawId[1].trim();
+  const url = `https://portal.korea.ac.kr/front/IntroNotice/NMainNoticeContent.kpd?idx=${id}&seq=`;
+  return {
+    id,
+    title,
+    date,
+    writer,
+    content,
+    url,
+  };
+}
+/**
+ *
+ * @param html getScehdulesFromKupid 함수에서 반환된 HTML string
+ * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
+ */
+export function parseScheduleInfo(html: string): NoticeInfo {
+  const tableRows = html.split("<tr>").slice(1);
+  tableRows[tableRows.length - 1] = tableRows[tableRows.length - 1].split("</tr>")[0];
+  const rawWriter = tableRows[0].match(/\<td\>(.+)\<\/td\>/);
+  if (!rawWriter) throw Error("Failed to parse writer");
+  const writer = trim(rawWriter[1]);
+
+  const rawDate = tableRows[1].split("<td>")[1].split("</td>")[0];
+  if (!rawDate) throw Error("Failed to parse date");
+  const date = trim(rawDate).trim().replace(/\n/g, "").replace(/\t/g, "").replace(/ /g, "");
 
   const rawTitle = tableRows[4].match(/\<td colspan="\d"\>(.+)\<\/td\>/);
   if (!rawTitle) throw Error("Failed to parse title");
