@@ -157,7 +157,7 @@ export async function getScholarFromKupid(id: string, password: string): Promise
   const urls = params.map((param) => getNoticeUrl(token, param));
   return Promise.all(
     urls.map(async (url) => {
-      const html = await fetchNotice(token, sessionId, grwSessionId, url, "90");
+      const html = await fetchNotice(token, sessionId, grwSessionId, url, "88");
       return makeFilePathPublic(html);
     })
   );
