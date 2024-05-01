@@ -1,4 +1,6 @@
-import { getToken } from "./token";
+import { getToken } from "./token.ts";
+import { NoticeInfo } from "./wrapper.ts";
+import { trim } from "./utils.ts";
 
 interface GrwResponse {
   grwSessionId: string;
@@ -14,15 +16,6 @@ interface NoticeViewParameters {
   replyTo: string;
   rowReply: string;
   depth: string;
-}
-
-export interface NoticeInfo {
-  id: string;
-  title: string;
-  date: string;
-  writer: string;
-  content: string;
-  url: string;
 }
 
 async function getNoticeListPage(
@@ -59,7 +52,16 @@ function parseNoticeParamsFromHTML(html: string): Array<NoticeViewParameters> {
     const matchArray = href.match(/\d+/g);
     if (!matchArray) throw Error("Failed to parse href");
     const [kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth] = matchArray;
-    return { kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth };
+    return {
+      kind,
+      index,
+      message_id,
+      replyTop,
+      replyPos,
+      replyTo,
+      rowReply,
+      depth,
+    };
   });
 }
 function parseScheduleParamsFromHTML(html: string): Array<NoticeViewParameters> {
@@ -70,7 +72,16 @@ function parseScheduleParamsFromHTML(html: string): Array<NoticeViewParameters> 
     const matchArray = href.match(/\d+/g);
     if (!matchArray) throw Error("Failed to parse href");
     const [_, kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth] = matchArray;
-    return { kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth };
+    return {
+      kind,
+      index,
+      message_id,
+      replyTop,
+      replyPos,
+      replyTo,
+      rowReply,
+      depth,
+    };
   });
 }
 
@@ -106,7 +117,6 @@ function makeFilePathPublic(html: string) {
 }
 
 /**
- *
  * @param id KUPID id
  * @param password KUPID password
  * @returns KUPID '일반공지' 공지사항 10개의 HTML string Array를 반환합니다.
@@ -126,7 +136,6 @@ export async function getNoticesFromKupid(id: string, password: string): Promise
 }
 
 /**
- *
  * @param id KUPID id
  * @param password KUPID password
  * @returns KUPID '학사일정' 공지사항 10개의 HTML string Array를 반환합니다.
@@ -145,7 +154,6 @@ export async function getSchedulesFromKupid(id: string, password: string): Promi
 }
 
 /**
- *
  * @param id KUPID id
  * @param password KUPID password
  * @returns KUPID '학사일정' 공지사항 10개의 HTML string Array를 반환합니다.
@@ -157,17 +165,13 @@ export async function getScholarFromKupid(id: string, password: string): Promise
   const urls = params.map((param) => getNoticeUrl(token, param));
   return Promise.all(
     urls.map(async (url) => {
-      const html = await fetchNotice(token, sessionId, grwSessionId, url, "90");
+      const html = await fetchNotice(token, sessionId, grwSessionId, url, "88");
       return makeFilePathPublic(html);
     })
   );
 }
 
-function trim(str: string): string {
-  return str.replace(/\<(.+)\>/g, "").replace(/(&nbsp;)+/g, " ");
-}
 /**
- *
  * @param html getNoticesFromKupid 함수에서 반환된 HTML string
  * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
  */
@@ -202,8 +206,7 @@ export function parseNoticeInfo(html: string): NoticeInfo {
   };
 }
 /**
- *
- * @param html getScehdulesFromKupid 함수에서 반환된 HTML string
+ * @param html getSchedulesFromKupid 함수에서 반환된 HTML string
  * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
  */
 export function parseScheduleInfo(html: string): NoticeInfo {
@@ -237,6 +240,10 @@ export function parseScheduleInfo(html: string): NoticeInfo {
   };
 }
 
+/**
+ * @param html getScholarFromKupid 함수에서 반환된 HTML string
+ * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
+ */
 export function parseScholarInfo(html: string): NoticeInfo {
   const tableRows = html.split("<tr>").slice(1);
   tableRows[tableRows.length - 1] = tableRows[tableRows.length - 1].split("</tr>")[0];
