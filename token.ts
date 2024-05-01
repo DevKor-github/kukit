@@ -6,7 +6,10 @@ interface KupidSessionAuth {
   sessionId: string;
 }
 
-export async function getToken(id: string, password: string): Promise<KupidSessionAuth> {
+export async function getToken(
+  id: string,
+  password: string,
+): Promise<KupidSessionAuth> {
   const {
     id: idKey,
     password: passwordKey,
@@ -47,7 +50,9 @@ export async function getToken(id: string, password: string): Promise<KupidSessi
     if (!cookies.length) throw Error("Unexpected length of set-cookie");
     const parsed = cookies.map(parseSetCookie);
     const sessionId = parsed.find(({ key }) => key === "PORTAL_SESSIONID");
-    if (!sessionId) throw Error("Failed to get sessionId from set-cookie result");
+    if (!sessionId) {
+      throw Error("Failed to get sessionId from set-cookie result");
+    }
     if (!id || !password || !csrf || !fake) {
       throw Error("Failed to parse elements");
     }
