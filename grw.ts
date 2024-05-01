@@ -203,7 +203,7 @@ export function parseNoticeInfo(html: string): NoticeInfo {
 }
 /**
  *
- * @param html getScehdulesFromKupid 함수에서 반환된 HTML string
+ * @param html getSchedulesFromKupid 함수에서 반환된 HTML string
  * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
  */
 export function parseScheduleInfo(html: string): NoticeInfo {
@@ -237,6 +237,11 @@ export function parseScheduleInfo(html: string): NoticeInfo {
   };
 }
 
+/**
+ *
+ * @param html getScholarFromKupid 함수에서 반환된 HTML string
+ * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
+ */
 export function parseScholarInfo(html: string): NoticeInfo {
   const tableRows = html.split("<tr>").slice(1);
   tableRows[tableRows.length - 1] = tableRows[tableRows.length - 1].split("</tr>")[0];
