@@ -29,7 +29,6 @@ export async function getBizUrlList(page: number, category: number): Promise<str
   else return matchArray.map((x) => 'https://biz.korea.ac.kr/news/' + x + '&kind=' + category);
 }
 
-console.log(await getBizUrlList(1, 1));
 function makeFilePathPublic(html: string) {
   return html.replace(/\/ft_board\/(.+)"/, function(match) {
     return 'https://biz.korea.ac.kr' + match;
