@@ -1,5 +1,5 @@
 import { getToken } from "./token.ts";
-import { type NoticeInfo } from "./wrapper.ts";
+import type { NoticeInfo } from "./wrapper.ts";
 import { trim } from "./utils.ts";
 
 interface GrwResponse {
