@@ -1,10 +1,3 @@
 export { getToken } from "./token.ts";
-export {
-  getNoticesFromKupid,
-  parseNoticeInfo,
-  NoticeInfo,
-  getSchedulesFromKupid,
-  getScholarFromKupid,
-  parseScheduleInfo,
-  parseScholarInfo,
-} from "./grw.ts";
+export { NoticeInfo } from "./kupid.ts";
+export { KupidType, fetchKupidNotices, fetchParsedKupidNoptices } from "./wrapper.ts";
