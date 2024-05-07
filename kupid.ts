@@ -1,5 +1,7 @@
 import { getToken } from "./token.ts";
 import { NoticeInfo } from "./wrapper.ts";
+import { trim } from "./utils.ts";
+
 interface GrwResponse {
   grwSessionId: string;
   html: string;
@@ -134,10 +136,6 @@ export async function getScholarFromKupid(id: string, password: string): Promise
       return makeFilePathPublic(html);
     })
   );
-}
-
-function trim(str: string): string {
-  return str.replace(/\<(.+)\>/g, "").replace(/(&nbsp;)+/g, " ");
 }
 
 export function parseNoticeInfo(html: string): NoticeInfo {
