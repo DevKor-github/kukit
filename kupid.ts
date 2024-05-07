@@ -1,4 +1,5 @@
 import { getToken } from "./token.ts";
+import { type NoticeInfo } from "./wrapper.ts";
 import { trim } from "./utils.ts";
 
 interface GrwResponse {
@@ -15,15 +16,6 @@ interface NoticeViewParameters {
   replyTo: string;
   rowReply: string;
   depth: string;
-}
-
-export interface NoticeInfo {
-  id: string;
-  title: string;
-  date: string;
-  writer: string;
-  content: string;
-  url: string;
 }
 
 async function getNoticeListPage(
