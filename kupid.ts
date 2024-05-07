@@ -1,5 +1,7 @@
 import { getToken } from "./token.ts";
 import { NoticeInfo } from "./wrapper.ts";
+import { trim } from "./utils.ts";
+
 interface GrwResponse {
   grwSessionId: string;
   html: string;
@@ -169,9 +171,6 @@ export async function getScholarFromKupid(id: string, password: string): Promise
   );
 }
 
-function trim(str: string): string {
-  return str.replace(/\<(.+)\>/g, "").replace(/(&nbsp;)+/g, " ");
-}
 /**
  * @param html getNoticesFromKupid 함수에서 반환된 HTML string
  * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
