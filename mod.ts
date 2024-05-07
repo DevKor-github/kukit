@@ -7,4 +7,5 @@ export {
   parseNoticeInfo,
   parseScheduleInfo,
   parseScholarInfo,
-} from "./grw.ts";
+} from "./kupid.ts";
+export { type KupidType, fetchKupidNotices, fetchParsedKupidNoptices } from "./wrapper.ts";
