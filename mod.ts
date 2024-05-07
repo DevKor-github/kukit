@@ -8,9 +8,9 @@ export {
   parseScholarInfo,
 } from "./kupid.ts";
 export {
-  type KupidType,
-  type NoticeInfo,
   fetchKupidNotices,
   fetchParsedKupidNoptices,
+  type KupidType,
+  type NoticeInfo,
 } from "./wrapper.ts";
-export { type InfoCollegeType, getNoticeInfos } from "./info.ts";
+export { getNoticeInfos, type InfoCollegeType } from "./info.ts";

@@ -1,23 +1,15 @@
 import {
-  getScholarFromKupid,
-  getSchedulesFromKupid,
   getNoticesFromKupid,
-  parseScholarInfo,
-  parseScheduleInfo,
+  getSchedulesFromKupid,
+  getScholarFromKupid,
+  type NoticeInfo,
   parseNoticeInfo,
+  parseScheduleInfo,
+  parseScholarInfo,
 } from "./kupid.ts";
-
 export type KupidType = "Scholar" | "Notice" | "Schedule";
-export interface NoticeInfo {
-  id: string;
-  title: string;
-  date: string;
-  writer: string;
-  content: string;
-  url: string;
-}
+
 /**
- *
  * @param id KUPID id
  * @param password KUPID password
  * @param type 장학공지 Scholar, 일반공지 Notice, 학사일정 Schedule
@@ -26,7 +18,7 @@ export interface NoticeInfo {
 export async function fetchKupidNotices(
   id: string,
   password: string,
-  type: KupidType
+  type: KupidType,
 ): Promise<string[]> {
   switch (type) {
     case "Scholar":
@@ -41,7 +33,6 @@ export async function fetchKupidNotices(
 }
 
 /**
- *
  * @param id KUPID id
  * @param password KUPID password
  * @param type 장학공지 Scholar, 일반공지 Notice, 학사일정 Schedule
@@ -50,7 +41,7 @@ export async function fetchKupidNotices(
 export async function fetchParsedKupidNoptices(
   id: string,
   password: string,
-  type: KupidType
+  type: KupidType,
 ): Promise<NoticeInfo[]> {
   const htmls = await fetchKupidNotices(id, password, type);
   switch (type) {
