@@ -1,5 +1,5 @@
-import { getToken } from "./token";
-
+import { getToken } from "./token.ts";
+import { NoticeInfo } from "./wrapper.ts";
 interface GrwResponse {
   grwSessionId: string;
   html: string;
@@ -14,15 +14,6 @@ interface NoticeViewParameters {
   replyTo: string;
   rowReply: string;
   depth: string;
-}
-
-export interface NoticeInfo {
-  id: string;
-  title: string;
-  date: string;
-  writer: string;
-  content: string;
-  url: string;
 }
 
 async function getNoticeListPage(

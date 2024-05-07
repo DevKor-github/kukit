@@ -5,10 +5,17 @@ import {
   parseScholarInfo,
   parseScheduleInfo,
   parseNoticeInfo,
-  NoticeInfo,
 } from "./kupid.ts";
-export type KupidType = "Scholar" | "Notice" | "Schedule";
 
+export type KupidType = "Scholar" | "Notice" | "Schedule";
+export interface NoticeInfo {
+  id: string;
+  title: string;
+  date: string;
+  writer: string;
+  content: string;
+  url: string;
+}
 /**
  *
  * @param id KUPID id
