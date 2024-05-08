@@ -13,3 +13,4 @@ export {
   fetchKupidNotices,
   fetchParsedKupidNoptices,
 } from "./wrapper.ts";
+export { type InfoCollegeType, getNoticeInfos } from "./info.ts";
