@@ -64,16 +64,14 @@ export async function getNoticeFromBiz(url: string): Promise<NoticeInfo> {
   if (!rawMain||!rawFile) throw Error("Failed to get content");
   const content = rawMain[0].replace(/<div class="file_info">/, "") + rawFile[0].replace(/<div class="list_info">/, "");
 
-  const category = "";
-
   return {
     id: rawID[1],
-    title: title,
+    title,
     date: rawDate[1],
     writer: rawWriter[1],
-    content: content,
-    url: url,
-    category: category,
+    content,
+    url,
+    category: "",
   };
 }
 /**
