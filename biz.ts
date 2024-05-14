@@ -26,7 +26,7 @@ export async function getBizUrlList(page: number, category: number): Promise<str
   const html = await scrap.text();
   const matchArray = html.match(/notice_view\.html\?no=([0-9]+)/g);
   if (!matchArray) throw Error('No match found');
-  else return matchArray.map((x) => 'https://biz.korea.ac.kr/news/' + x + '&kind=' + category);
+  return matchArray.map((x) => 'https://biz.korea.ac.kr/news/' + x + '&kind=' + category);
 }
 
 function makeFilePathPublic(html: string) {
