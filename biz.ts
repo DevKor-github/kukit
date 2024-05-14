@@ -82,30 +82,14 @@ export async function getNoticeFromBiz(url: string): Promise<NoticeInfo> {
 export function categorizeBizNotice(notice: NoticeInfo) : NoticeInfo {
   const mainCategory = notice.url.match(/kind=([0-9])/);
   if (!mainCategory) throw Error("Failed to get category");
-  switch (mainCategory[0]) {
-    case 'kind=1':
-      notice.category = '학부';
-      if (notice.title.includes('장학')) notice.category = notice.category + ' 장학';
-      else notice.category = notice.category + ' 공지';
-      break;
-    case 'kind=2'||'kind=3':
-      notice.category = '대학원';
-      if (notice.title.includes('장학')) notice.category = notice.category + ' 장학';
-      else notice.category = notice.category + ' 공지';
-      break;
-    case 'kind=6':
-      notice.category = '진로정보';
-      if (notice.title.includes('장학')) notice.category = '일반 장학';
-      break;
-    case 'kind=7':
-      notice.category = '교환학생';
-      if (notice.title.includes('장학')) notice.category = notice.category + ' 장학';
-      else notice.category = notice.category + ' 공지';
-      break;
-    default:
-      notice.category = '일반';
-      if (notice.title.includes('장학')) notice.category = notice.category + ' 장학';
-      else notice.category = notice.category + ' 공지';
-  };
+  const category = {
+    1: '학부',
+    2: '대학원',
+    3: '대학원',
+    6: '진로정보',
+    7: '교환학생',
+  }[mainCategory[1]] ?? '일반';
+  if (notice.title.includes('장학')) notice.category = category + ' 장학';
+  else notice.category = category + ' 공지';
   return notice;
 }
