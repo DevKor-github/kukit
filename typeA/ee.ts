@@ -68,6 +68,3 @@ export async function getNoticeFromEe(
     category,
   };
 }
-
-const oneurl = (await getEeUrlList(1, 1))[3];
-console.log((await getNoticeFromEe(oneurl, 1)).content);

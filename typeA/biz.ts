@@ -63,6 +63,3 @@ export async function getNoticeFromBiz(
     category,
   };
 }
-
-const urlList = await getBizUrlList(1, 1);
-console.log((await getNoticeFromBiz(urlList[2], 1)).content);
