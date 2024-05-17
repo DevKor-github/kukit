@@ -23,7 +23,10 @@ export async function getToken(id: string, password: string): Promise<KupidSessi
     if (!b) throw Error("Failed to parse kupid/intro @ 1st delimiter");
     const [c, d] = b.split(secondDelimiter);
     if (!d) throw Error("Failed to parse kupid/intro @ 2nd delimiter");
-    const elems = c.split("\n").map((line) => line.trim()).filter(Boolean);
+    const elems = c
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
     if (elems.length !== 4) {
       throw Error("Failed to parse kupid/intfo @ elem trimming");
     }
@@ -44,7 +47,9 @@ export async function getToken(id: string, password: string): Promise<KupidSessi
     if (!cookies.length) throw Error("Unexpected length of set-cookie");
     const parsed = cookies.map(parseSetCookie);
     const sessionId = parsed.find(({ key }) => key === "PORTAL_SESSIONID");
-    if (!sessionId) throw Error("Failed to get sessionId from set-cookie result");
+    if (!sessionId) {
+      throw Error("Failed to get sessionId from set-cookie result");
+    }
     if (!id || !password || !csrf || !fake) {
       throw Error("Failed to parse elements");
     }
