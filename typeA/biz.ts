@@ -50,9 +50,7 @@ export async function getNoticeFromBiz(
     7: "교환학생",
   }[mainCategory] ?? "일반";
 
-  const category = title.includes("장학")
-    ? subcategory + " 장학"
-    : subcategory + " 공지";
+  const category = subcategory + (title.includes("장학") ? " 장학" : " 공지");
 
   return {
     title,
