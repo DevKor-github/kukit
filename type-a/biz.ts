@@ -1,12 +1,20 @@
 import {
-  getContent,
-  getDate,
-  getTitle,
+  convertRelativeFilePath,
+  fetchWithError,
   getTypeAUrlList,
   getWriter,
-  makeFilePathPublic,
-  type typeANotice,
-} from "./typeA.ts";
+  parseArticle,
+  type TypeANotice,
+} from "./type-a.ts";
+
+enum BizCategory {
+  Undergraduate = 1,
+  Graduate = 2,
+  MBA = 3,
+  Career = 6,
+  Exchange = 7,
+  All = 10,
+}
 
 /**
  * @param page 탐색할 페이지 번호
@@ -15,14 +23,12 @@ import {
  */
 export async function getBizUrlList(
   page: number,
-  category: number,
+  category: BizCategory,
 ): Promise<string[]> {
   const mainUrl =
     `https://biz.korea.ac.kr/news/notice.html?kind=${category}&page=${page}`;
   const hrefList = await getTypeAUrlList(mainUrl, "notice_view");
-  return hrefList.map((x) =>
-    "https://biz.korea.ac.kr/news/" + x + "&kind=" + category
-  );
+  return hrefList.map((x) => "https://biz.korea.ac.kr/news/" + x);
 }
 
 /**
@@ -31,16 +37,15 @@ export async function getBizUrlList(
  */
 export async function getNoticeFromBiz(
   url: string,
-  mainCategory: number,
-): Promise<typeANotice> {
-  const scrap = await fetch(url);
+  mainCategory: BizCategory,
+): Promise<TypeANotice> {
+  const scrap = await fetchWithError(url);
   const html = await scrap.text();
-  const article = makeFilePathPublic(html, "https://biz.korea.ac.kr");
+  const article = convertRelativeFilePath(html, "https://biz.korea.ac.kr");
 
-  const title = getTitle(article, "p");
-  const date = getDate(article, "span");
-  const writer = getWriter(article, "parts");
-  const content = getContent(article);
+  const noticeData = parseArticle(article, { title: "p", date: "span" });
+  noticeData.writer = getWriter(article, "parts");
+  noticeData.url = url;
 
   const subcategory = {
     1: "학부",
@@ -48,18 +53,12 @@ export async function getNoticeFromBiz(
     3: "대학원",
     6: "진로정보",
     7: "교환학생",
-  }[mainCategory] ?? "일반";
+    10: "일반",
+  }[mainCategory];
+  if (!subcategory) throw Error("Invalid category number");
 
-  const category = title.includes("장학")
-    ? subcategory + " 장학"
-    : subcategory + " 공지";
+  noticeData.category = subcategory +
+    (noticeData.title.includes("장학") ? " 장학" : " 공지");
 
-  return {
-    title,
-    date,
-    writer,
-    content,
-    url,
-    category,
-  };
+  return noticeData;
 }

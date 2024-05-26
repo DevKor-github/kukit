@@ -1,12 +1,17 @@
 import {
-  getContent,
-  getDate,
-  getTitle,
+  convertRelativeFilePath,
+  fetchWithError,
   getTypeAUrlList,
   getWriter,
-  makeFilePathPublic,
-  type typeANotice,
-} from "./typeA.ts";
+  parseArticle,
+  type TypeANotice,
+} from "./type-a.ts";
+
+enum EeCategory {
+  Undergraduate = 1,
+  Graduate = 2,
+  Job = 3,
+}
 
 /**
  * @param page 탐색할 페이지 번호
@@ -15,7 +20,7 @@ import {
  */
 export async function getEeUrlList(
   page: number,
-  category: number,
+  category: EeCategory,
 ): Promise<string[]> {
   const eeCategory = {
     1: "undernotice",
@@ -36,16 +41,15 @@ export async function getEeUrlList(
  */
 export async function getNoticeFromEe(
   url: string,
-  mainCategory: number,
-): Promise<typeANotice> {
-  const scrap = await fetch(url);
+  mainCategory: EeCategory,
+): Promise<TypeANotice> {
+  const scrap = await fetchWithError(url);
   const html = await scrap.text();
-  const article = makeFilePathPublic(html, "https://ee.korea.ac.kr");
+  const article = convertRelativeFilePath(html, "https://ee.korea.ac.kr");
 
-  const title = getTitle(article, "p");
-  const date = getDate(article, "span");
-  const writer = getWriter(article, "name");
-  const content = getContent(article);
+  const noticeData = parseArticle(article, { title: "p", date: "span" });
+  noticeData.writer = getWriter(article, "name");
+  noticeData.url = url;
 
   const subcategory = {
     1: "학부",
@@ -53,18 +57,11 @@ export async function getNoticeFromEe(
     3: "취업정보",
   }[mainCategory];
   if (!subcategory) throw Error("Invalid category number");
-  const category = mainCategory == 3
-    ? subcategory
-    : title.includes("장학")
-    ? subcategory + " 장학"
-    : subcategory + " 공지";
 
-  return {
-    title,
-    date,
-    writer,
-    content,
-    url,
-    category,
-  };
+  noticeData.category = subcategory +
+    (mainCategory == 3
+      ? ""
+      : (noticeData.title.includes("장학") ? " 장학" : " 공지"));
+
+  return noticeData;
 }
