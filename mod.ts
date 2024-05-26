@@ -3,8 +3,14 @@ export {
   getNoticesFromKupid,
   getSchedulesFromKupid,
   getScholarFromKupid,
-  type NoticeInfo,
   parseNoticeInfo,
   parseScheduleInfo,
   parseScholarInfo,
-} from "./grw.ts";
+} from "./kupid.ts";
+export {
+  type KupidType,
+  type NoticeInfo,
+  fetchKupidNotices,
+  fetchParsedKupidNoptices,
+} from "./wrapper.ts";
+export { type InfoCollegeType, getNoticeInfos } from "./info.ts";
