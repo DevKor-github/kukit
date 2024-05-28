@@ -14,7 +14,7 @@ enum MeCategory {
 }
 
 /**
- * @param listnum 탐색할 게시글 최대치
+ * @param listnum 탐색할 게시글 개수 최대치
  * @param category 탐색할 카테고리 번호, 0: 일반(학부 및 대학원, 취업정보는 해당없음), 1: 학부, 2: 대학원, 3: 취업정보
  * @returns 해당 페이지의 공지사항 URL 리스트를 반환합니다.
  */
