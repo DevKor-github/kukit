@@ -22,7 +22,7 @@ export async function getMeUrlList(
   listnum: number,
   category: MeCategory,
 ): Promise<string[]> {
-  const meCategory = (category != 3) ? "undernotice" : "job";
+  const meCategory = (category != MeCategory.Job) ? "undernotice" : "job";
   if (!meCategory) throw Error("Invalid category number");
   const mainUrl = (category != 3)
     ? `https://me.korea.ac.kr/community/undernotice.html?cate%5B%5D=${category}&listnum=${listnum}`
