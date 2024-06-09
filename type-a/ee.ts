@@ -35,7 +35,7 @@ export async function getEeUrlList(
 }
 
 /**
- * @param url getEngUrlList 함수에서 반환된 url 하나
+ * @param url getEeUrlList 함수에서 반환된 url 하나
  * @param mainCategory 탐색중인 카테고리 번호, 1: 학부, 2: 대학원, 3: 취업정보
  * @returns 공지사항의 제목, 작성자, 게시일자, public URL, HTML table body, 카테고리 내용을 반환합니다.
  */
