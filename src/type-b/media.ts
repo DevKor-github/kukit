@@ -1,5 +1,5 @@
-import { trim, convertRelativeImgPath } from "../utils";
-import type { NoticeInfo } from "../type.d";
+import { trim, convertRelativeImgPath } from "../utils.ts";
+import type { NoticeInfo } from "../type.d.ts";
 
 export type MediaCollegeType =
   | "미디어학부 공지사항"
