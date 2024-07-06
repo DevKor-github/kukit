@@ -29,7 +29,7 @@ const INFO_URL_MAP: Record<InfoCollegeType, string> = {
  * @param type 가져올 공지사항 카테고리
  * @returns 해당 카테고리 공지사항 최근 10개의 content HTML, 제목, 작성자, 게시일자, KUPID 내부 id, public URL을 반환합니다.
  */
-export async function fetchNoticeInfos(type: InfoCollegeType): Promise<NoticeInfo[]> {
+export async function fetchInfoNotices(type: InfoCollegeType): Promise<NoticeInfo[]> {
   const url = INFO_URL_MAP[type];
   const response = await fetch(url);
   const html = await response.text();
