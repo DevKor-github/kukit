@@ -1,3 +1,7 @@
+export function trim(str: string): string {
+  return str.replace(/\<(.+)\>/g, "").replace(/(&nbsp;)+/g, " ");
+}
+
 const firstDelimiter = `<input type="password" name="pw" id="_pw" value="" />`;
 const secondDelimiter = `<input type="hidden" name="direct_div"/>`;
 
@@ -6,10 +10,7 @@ interface KupidSessionAuth {
   sessionId: string;
 }
 
-export async function getToken(
-  id: string,
-  password: string,
-): Promise<KupidSessionAuth> {
+export async function getToken(id: string, password: string): Promise<KupidSessionAuth> {
   const {
     id: idKey,
     password: passwordKey,
@@ -90,7 +91,7 @@ export async function getToken(
   return { token, sessionId };
 }
 
-function parseSetCookie(cookie: string) {
+export function parseSetCookie(cookie: string) {
   const [kv] = cookie.split(";");
   const [key, value] = kv.split("=");
   return { key, value };

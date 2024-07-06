@@ -1,5 +1,5 @@
-import { trim } from "./utils";
-import { NoticeInfo } from "./wrapper";
+import { trim } from "../utils.ts";
+import type { NoticeInfo } from "../type.d.ts";
 
 export type InfoCollegeType =
   | "정보대학 학부 공지사항"
@@ -24,7 +24,14 @@ const InfoTypeUrlMap: Record<InfoCollegeType, string> = {
   "정보대학 진로정보 - 공모전": "https://info.korea.ac.kr/info/board/course_competition.do",
 };
 
-export async function getNoticeInfos(type: InfoCollegeType): Promise<NoticeInfo[]> {
+/**
+ *
+ * @param id KUPID id
+ * @param password KUPID password
+ * @param type 장학공지 Scholar, 일반공지 Notice, 학사일정 Schedule
+ * @returns KUPID의 해당 카테고리 공지사항 최근 10개의 content HTML, 제목, 작성자, 게시일자, KUPID 내부 id, public URL을 반환합니다.
+ */
+export async function fetchNoticeInfos(type: InfoCollegeType): Promise<NoticeInfo[]> {
   const url = InfoTypeUrlMap[type];
   const response = await fetch(url);
   const html = await response.text();
