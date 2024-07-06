@@ -1,3 +1,15 @@
+export function convertRelativeImgPath(html: string, baseUrl: string): string {
+  const imgTagRegex = /<img\s+[^>]*src="([^"]+)"[^>]*>/gi;
+
+  return html.replace(imgTagRegex, (match, src) => {
+    if (!src.startsWith("http")) {
+      const absoluteUrl = baseUrl + src;
+      return match.replace(src, absoluteUrl);
+    }
+    return match;
+  });
+}
+
 export function trim(str: string): string {
   return str.replace(/\<(.+)\>/g, "").replace(/(&nbsp;)+/g, " ");
 }
