@@ -26,10 +26,8 @@ const InfoTypeUrlMap: Record<InfoCollegeType, string> = {
 
 /**
  *
- * @param id KUPID id
- * @param password KUPID password
- * @param type 장학공지 Scholar, 일반공지 Notice, 학사일정 Schedule
- * @returns KUPID의 해당 카테고리 공지사항 최근 10개의 content HTML, 제목, 작성자, 게시일자, KUPID 내부 id, public URL을 반환합니다.
+ * @param type 가져올 공지사항 카테고리
+ * @returns 해당 카테고리 공지사항 최근 10개의 content HTML, 제목, 작성자, 게시일자, KUPID 내부 id, public URL을 반환합니다.
  */
 export async function fetchNoticeInfos(type: InfoCollegeType): Promise<NoticeInfo[]> {
   const url = InfoTypeUrlMap[type];
