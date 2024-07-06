@@ -1,3 +1,13 @@
+export function extractBaseUrl(url: string): string {
+  const protocolEndIndex = url.indexOf("://") + 3;
+  const pathStartIndex = url.indexOf("/", protocolEndIndex);
+
+  if (pathStartIndex === -1) {
+    return url;
+  }
+  return url.substring(0, pathStartIndex);
+}
+
 export function convertRelativeImgPath(html: string, baseUrl: string): string {
   const imgTagRegex = /<img\s+[^>]*src="([^"]+)"[^>]*>/gi;
 
