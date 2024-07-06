@@ -12,7 +12,7 @@ export type InfoCollegeType =
   | "정보대학 진로정보 - 인턴"
   | "정보대학 진로정보 - 공모전";
 
-const InfoTypeUrlMap: Record<InfoCollegeType, string> = {
+const INFO_URL_MAP: Record<InfoCollegeType, string> = {
   "정보대학 학부 공지사항": "https://info.korea.ac.kr/info/board/notice_under.do",
   "정보대학 대학원 공지사항": "https://info.korea.ac.kr/info/board/notice_grad.do",
   "정보대학 학부 장학공지": "https://info.korea.ac.kr/info/board/scholarship_under.do",
@@ -30,7 +30,7 @@ const InfoTypeUrlMap: Record<InfoCollegeType, string> = {
  * @returns 해당 카테고리 공지사항 최근 10개의 content HTML, 제목, 작성자, 게시일자, KUPID 내부 id, public URL을 반환합니다.
  */
 export async function fetchNoticeInfos(type: InfoCollegeType): Promise<NoticeInfo[]> {
-  const url = InfoTypeUrlMap[type];
+  const url = INFO_URL_MAP[type];
   const response = await fetch(url);
   const html = await response.text();
 
