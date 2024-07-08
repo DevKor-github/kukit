@@ -1,5 +1,5 @@
-import { trim } from "./utils";
-import { NoticeInfo } from "./wrapper";
+import { trim } from "./utils.ts";
+import type { NoticeInfo } from "./wrapper.ts";
 
 export type InfoCollegeType =
   | "정보대학 학부 공지사항"
@@ -13,29 +13,45 @@ export type InfoCollegeType =
   | "정보대학 진로정보 - 공모전";
 
 const InfoTypeUrlMap: Record<InfoCollegeType, string> = {
-  "정보대학 학부 공지사항": "https://info.korea.ac.kr/info/board/notice_under.do",
-  "정보대학 대학원 공지사항": "https://info.korea.ac.kr/info/board/notice_grad.do",
-  "정보대학 학부 장학공지": "https://info.korea.ac.kr/info/board/scholarship_under.do",
-  "정보대학 대학원 장학공지": "https://info.korea.ac.kr/info/board/scholarship_grad.do",
+  "정보대학 학부 공지사항":
+    "https://info.korea.ac.kr/info/board/notice_under.do",
+  "정보대학 대학원 공지사항":
+    "https://info.korea.ac.kr/info/board/notice_grad.do",
+  "정보대학 학부 장학공지":
+    "https://info.korea.ac.kr/info/board/scholarship_under.do",
+  "정보대학 대학원 장학공지":
+    "https://info.korea.ac.kr/info/board/scholarship_grad.do",
   "정보대학 행사 및 소식": "https://info.korea.ac.kr/info/board/news.do",
-  "정보대학 진로정보 - 채용": "https://info.korea.ac.kr/info/board/course_job.do",
-  "정보대학 진로정보 - 교육": "https://info.korea.ac.kr/info/board/course_program.do",
-  "정보대학 진로정보 - 인턴": "https://info.korea.ac.kr/info/board/course_intern.do",
-  "정보대학 진로정보 - 공모전": "https://info.korea.ac.kr/info/board/course_competition.do",
+  "정보대학 진로정보 - 채용":
+    "https://info.korea.ac.kr/info/board/course_job.do",
+  "정보대학 진로정보 - 교육":
+    "https://info.korea.ac.kr/info/board/course_program.do",
+  "정보대학 진로정보 - 인턴":
+    "https://info.korea.ac.kr/info/board/course_intern.do",
+  "정보대학 진로정보 - 공모전":
+    "https://info.korea.ac.kr/info/board/course_competition.do",
 };
 
-export async function getNoticeInfos(type: InfoCollegeType): Promise<NoticeInfo[]> {
+export async function getNoticeInfos(
+  type: InfoCollegeType,
+): Promise<NoticeInfo[]> {
   const url = InfoTypeUrlMap[type];
   const response = await fetch(url);
   const html = await response.text();
 
   const noticeInfo = parseNoticeRowsFromTable(html, url);
   return Promise.all(
-    noticeInfo.map(async (info) => ({ ...info, content: await getNoticeContent(info.url) }))
+    noticeInfo.map(async (info) => ({
+      ...info,
+      content: await getNoticeContent(info.url),
+    })),
   );
 }
 
-function parseNoticeRowsFromTable(html: string, hostPath: string): Omit<NoticeInfo, "content">[] {
+function parseNoticeRowsFromTable(
+  html: string,
+  hostPath: string,
+): Omit<NoticeInfo, "content">[] {
   const tableRegex = /<tbody>([\s\S]+?)<\/tbody>/;
   const tableMatch = html.match(tableRegex);
 
@@ -58,7 +74,7 @@ function parseNoticeRowsFromTable(html: string, hostPath: string): Omit<NoticeIn
         .replace(/(&nbsp;)+/g, " ")
         .replace(/\n/g, "")
         .replace(/\t/g, "")
-        .replace(/&amp;/g, "&")
+        .replace(/&amp;/g, "&"),
     ).trim();
 
     const urlMatch = td[1].match(/href="([^"]+?)"/);
