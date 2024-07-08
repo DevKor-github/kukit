@@ -9,7 +9,7 @@ export {
 } from "./kupid.ts";
 export {
   fetchKupidNotices,
-  fetchParsedKupidNoptices,
+  fetchParsedKupidNotices,
   type KupidType,
   type NoticeInfo,
 } from "./wrapper.ts";
