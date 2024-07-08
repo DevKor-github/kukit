@@ -32,6 +32,10 @@ const InfoTypeUrlMap: Record<InfoCollegeType, string> = {
     "https://info.korea.ac.kr/info/board/course_competition.do",
 };
 
+/**
+ * @param type 크롤링해올 정보대학 공지사항 카테고리 선택
+ * @returns Notice Info form으로 상위 10개 공지사항을 반환
+ */
 export async function getNoticeInfos(
   type: InfoCollegeType,
 ): Promise<NoticeInfo[]> {
