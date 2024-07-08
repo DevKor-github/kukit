@@ -52,7 +52,16 @@ function parseNoticeParamsFromHTML(html: string): Array<NoticeViewParameters> {
     const matchArray = href.match(/\d+/g);
     if (!matchArray) throw Error("Failed to parse href");
     const [kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth] = matchArray;
-    return { kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth };
+    return {
+      kind,
+      index,
+      message_id,
+      replyTop,
+      replyPos,
+      replyTo,
+      rowReply,
+      depth,
+    };
   });
 }
 function parseScheduleParamsFromHTML(html: string): Array<NoticeViewParameters> {
@@ -63,7 +72,16 @@ function parseScheduleParamsFromHTML(html: string): Array<NoticeViewParameters> 
     const matchArray = href.match(/\d+/g);
     if (!matchArray) throw Error("Failed to parse href");
     const [_, kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth] = matchArray;
-    return { kind, index, message_id, replyTop, replyPos, replyTo, rowReply, depth };
+    return {
+      kind,
+      index,
+      message_id,
+      replyTop,
+      replyPos,
+      replyTo,
+      rowReply,
+      depth,
+    };
   });
 }
 
