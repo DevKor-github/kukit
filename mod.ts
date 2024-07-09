@@ -1,16 +1,9 @@
-export { getToken } from "./token.ts";
-export {
-  getNoticesFromKupid,
-  getSchedulesFromKupid,
-  getScholarFromKupid,
-  parseNoticeInfo,
-  parseScheduleInfo,
-  parseScholarInfo,
-} from "./kupid.ts";
-export {
-  type KupidType,
-  type NoticeInfo,
-  fetchKupidNotices,
-  fetchParsedKupidNotices,
-} from "./wrapper.ts";
-export { type InfoCollegeType, getNoticeInfos } from "./info.ts";
+export { getToken } from "./utils.ts";
+export type { KupidSessionAuth } from "./utils.ts";
+export * from "./kupid.ts";
+export type { TypeANotice } from "./type-a/type-a.ts";
+export { MeCategory, fetchMeNotices } from "./type-a/me.ts";
+export { EeCategory, fetchEeNotices } from "./type-a/ee.ts";
+export { BizCategory, fetchBizNotices } from "./type-a/biz.ts";
+export type { TypeBProvider, TypeBCategory } from "./type-b.ts";
+export { fetchTypeBNotices, fetchParsedTypeBNotices } from "./type-b.ts";
