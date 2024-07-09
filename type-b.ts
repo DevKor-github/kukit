@@ -75,7 +75,7 @@ async function getNoticeContent(url: string): Promise<string> {
   return result;
 }
 
-export type TypeBProvider = "미디어학부" | "정보대학";
+export type TypeBProvider = "미디어학부" | "정보대학" | "사범대학" | "교육학과";
 
 export type TypeBCategory =
   | "미디어학부 공지사항"
@@ -92,10 +92,17 @@ export type TypeBCategory =
   | "정보대학 진로정보 - 채용"
   | "정보대학 진로정보 - 교육"
   | "정보대학 진로정보 - 인턴"
-  | "정보대학 진로정보 - 공모전";
+  | "정보대학 진로정보 - 공모전"
+  | "사범대학 학부 공지사항"
+  | "사범대학 대학원 공지사항"
+  | "사범대학 구인 채용공고"
+  | "교육학과 학부 공지사항"
+  | "교육학과 대학원 공지사항";
 
 const INFO_BASE_URL = "https://info.korea.ac.kr";
 const MEDIA_BASE_URL = "https://mediacom.korea.ac.kr";
+const EDUCOLLEGE_BASE_URL = "https://kuedu.korea.ac.kr";
+const EDUDEP_BASE_URL = "https://edu.korea.ac.kr";
 
 const TYPE_B_RELATIVE_PATH_MAP: Record<TypeBCategory, string> = {
   "미디어학부 공지사항": "/mediacom/faculty/notice.do",
@@ -113,11 +120,18 @@ const TYPE_B_RELATIVE_PATH_MAP: Record<TypeBCategory, string> = {
   "정보대학 진로정보 - 교육": "/info/board/course_program.do",
   "정보대학 진로정보 - 인턴": "/info/board/course_intern.do",
   "정보대학 진로정보 - 공모전": "/info/board/course_competition.do",
+  "사범대학 학부 공지사항": "/educa/notice/notice01.do",
+  "사범대학 대학원 공지사항": "/educa/notice/notice02.do",
+  "사범대학 구인 채용공고": "/educa/notice/hire.do",
+  "교육학과 학부 공지사항": "/edu/board/notice.do",
+  "교육학과 대학원 공지사항": "/edu/board/news.do",
 };
 
 const TYPE_B_CATEGORY_NAME_BASE_URL_MAP: Record<TypeBProvider, string> = {
   미디어학부: MEDIA_BASE_URL,
   정보대학: INFO_BASE_URL,
+  사범대학: EDUCOLLEGE_BASE_URL,
+  교육학과: EDUDEP_BASE_URL,
 };
 const TYPE_B_URL_MAP: Record<TypeBCategory, string> = {} as Record<TypeBCategory, string>;
 for (const type in TYPE_B_RELATIVE_PATH_MAP) {
