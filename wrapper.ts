@@ -1,10 +1,10 @@
 import {
-  getScholarFromKupid,
-  getSchedulesFromKupid,
   getNoticesFromKupid,
-  parseScholarInfo,
-  parseScheduleInfo,
+  getSchedulesFromKupid,
+  getScholarFromKupid,
   parseNoticeInfo,
+  parseScheduleInfo,
+  parseScholarInfo,
 } from "./kupid.ts";
 
 export type KupidType = "Scholar" | "Notice" | "Schedule";
@@ -17,7 +17,6 @@ export interface NoticeInfo {
   url: string;
 }
 /**
- *
  * @param id KUPID id
  * @param password KUPID password
  * @param type 장학공지 Scholar, 일반공지 Notice, 학사일정 Schedule
@@ -26,31 +25,30 @@ export interface NoticeInfo {
 export async function fetchKupidNotices(
   id: string,
   password: string,
-  type: KupidType
+  type: KupidType,
 ): Promise<string[]> {
   switch (type) {
     case "Scholar":
-      return getScholarFromKupid(id, password);
+      return await getScholarFromKupid(id, password);
     case "Notice":
-      return getNoticesFromKupid(id, password);
+      return await getNoticesFromKupid(id, password);
     case "Schedule":
-      return getSchedulesFromKupid(id, password);
+      return await getSchedulesFromKupid(id, password);
     default:
       throw new Error("Invalid Type");
   }
 }
 
 /**
- *
  * @param id KUPID id
  * @param password KUPID password
  * @param type 장학공지 Scholar, 일반공지 Notice, 학사일정 Schedule
  * @returns KUPID의 해당 카테고리 공지사항 최근 10개의 content HTML, 제목, 작성자, 게시일자, KUPID 내부 id, public URL을 반환합니다.
  */
-export async function fetchParsedKupidNoptices(
+export async function fetchParsedKupidNotices(
   id: string,
   password: string,
-  type: KupidType
+  type: KupidType,
 ): Promise<NoticeInfo[]> {
   const htmls = await fetchKupidNotices(id, password, type);
   switch (type) {
