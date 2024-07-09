@@ -8,13 +8,13 @@ export function extractBaseUrl(url: string): string {
   return url.substring(0, pathStartIndex);
 }
 
-export function convertRelativeImgPath(html: string, baseUrl: string): string {
-  const imgTagRegex = /<img\s+[^>]*src="([^"]+)"[^>]*>/gi;
+export function convertRelativePaths(html: string, baseUrl: string) {
+  const attributeRegex = /(href|src)="([^"]+)"/gi;
 
-  return html.replace(imgTagRegex, (match, src) => {
-    if (!src.startsWith("http")) {
-      const absoluteUrl = baseUrl + src;
-      return match.replace(src, absoluteUrl);
+  return html.replace(attributeRegex, (match, _type, url) => {
+    if (!url.startsWith("http")) {
+      const [prefix, suffix] = match.split(url);
+      return prefix + baseUrl + url + suffix;
     }
     return match;
   });
@@ -27,7 +27,7 @@ export function trim(str: string): string {
 const firstDelimiter = `<input type="password" name="pw" id="_pw" value="" />`;
 const secondDelimiter = `<input type="hidden" name="direct_div"/>`;
 
-interface KupidSessionAuth {
+export interface KupidSessionAuth {
   token: string;
   sessionId: string;
 }
