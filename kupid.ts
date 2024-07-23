@@ -1,6 +1,5 @@
-import { getToken } from "./token.ts";
-import { NoticeInfo } from "./wrapper.ts";
-import { trim } from "./utils.ts";
+import type { NoticeInfo, KupidType } from "./types.ts";
+import { getToken, trim } from "./utils.ts";
 
 interface GrwResponse {
   grwSessionId: string;
@@ -116,12 +115,7 @@ function makeFilePathPublic(html: string) {
   });
 }
 
-/**
- * @param id KUPID id
- * @param password KUPID password
- * @returns KUPID '일반공지' 공지사항 10개의 HTML string Array를 반환합니다.
- */
-export async function getNoticesFromKupid(id: string, password: string): Promise<string[]> {
+async function getNoticesFromKupid(id: string, password: string): Promise<string[]> {
   const { token, sessionId } = await getToken(id, password);
   const { grwSessionId, html } = await getNoticeListPage(token, sessionId, "11");
   const params = parseNoticeParamsFromHTML(html);
@@ -135,12 +129,7 @@ export async function getNoticesFromKupid(id: string, password: string): Promise
   );
 }
 
-/**
- * @param id KUPID id
- * @param password KUPID password
- * @returns KUPID '학사일정' 공지사항 10개의 HTML string Array를 반환합니다.
- */
-export async function getSchedulesFromKupid(id: string, password: string): Promise<string[]> {
+async function getSchedulesFromKupid(id: string, password: string): Promise<string[]> {
   const { token, sessionId } = await getToken(id, password);
   const { grwSessionId, html } = await getNoticeListPage(token, sessionId, "89");
   const params = parseScheduleParamsFromHTML(html);
@@ -153,12 +142,7 @@ export async function getSchedulesFromKupid(id: string, password: string): Promi
   );
 }
 
-/**
- * @param id KUPID id
- * @param password KUPID password
- * @returns KUPID '학사일정' 공지사항 10개의 HTML string Array를 반환합니다.
- */
-export async function getScholarFromKupid(id: string, password: string): Promise<string[]> {
+async function getScholarFromKupid(id: string, password: string): Promise<string[]> {
   const { token, sessionId } = await getToken(id, password);
   const { grwSessionId, html } = await getNoticeListPage(token, sessionId, "88");
   const params = parseNoticeParamsFromHTML(html);
@@ -171,11 +155,7 @@ export async function getScholarFromKupid(id: string, password: string): Promise
   );
 }
 
-/**
- * @param html getNoticesFromKupid 함수에서 반환된 HTML string
- * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
- */
-export function parseNoticeInfo(html: string): NoticeInfo {
+function parseNoticeInfo(html: string): NoticeInfo {
   const tableRows = html.split("<tr>").slice(1);
   tableRows[tableRows.length - 1] = tableRows[tableRows.length - 1].split("</tr>")[0];
   const rawWriter = tableRows[0].match(/\<td\>(.+)\<\/td\>/);
@@ -205,11 +185,8 @@ export function parseNoticeInfo(html: string): NoticeInfo {
     url,
   };
 }
-/**
- * @param html getSchedulesFromKupid 함수에서 반환된 HTML string
- * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
- */
-export function parseScheduleInfo(html: string): NoticeInfo {
+
+function parseScheduleInfo(html: string): NoticeInfo {
   const tableRows = html.split("<tr>").slice(1);
   tableRows[tableRows.length - 1] = tableRows[tableRows.length - 1].split("</tr>")[0];
   const rawWriter = tableRows[0].match(/\<td\>(.+)\<\/td\>/);
@@ -240,11 +217,7 @@ export function parseScheduleInfo(html: string): NoticeInfo {
   };
 }
 
-/**
- * @param html getScholarFromKupid 함수에서 반환된 HTML string
- * @returns 공지사항의 제목, 작성자, 게시일자, KUPID 내부 id, public URL, HTML table body의 내용을 반환합니다.
- */
-export function parseScholarInfo(html: string): NoticeInfo {
+function parseScholarInfo(html: string): NoticeInfo {
   const tableRows = html.split("<tr>").slice(1);
   tableRows[tableRows.length - 1] = tableRows[tableRows.length - 1].split("</tr>")[0];
   const rawWriter = tableRows[0].match(/\<td\>(.+)\<\/td\>/);
@@ -273,4 +246,41 @@ export function parseScholarInfo(html: string): NoticeInfo {
     content,
     url,
   };
+}
+
+/** notice content from KUPID. */
+export function fetchKupidNotices(
+  id: string,
+  password: string,
+  type: KupidType
+): Promise<string[]> {
+  switch (type) {
+    case "Scholar":
+      return getScholarFromKupid(id, password);
+    case "Notice":
+      return getNoticesFromKupid(id, password);
+    case "Schedule":
+      return getSchedulesFromKupid(id, password);
+    default:
+      throw new Error("Invalid Type");
+  }
+}
+
+/** return metadata and notice content from KUPID. */
+export async function fetchParsedKupidNotices(
+  id: string,
+  password: string,
+  type: KupidType
+): Promise<NoticeInfo[]> {
+  const htmls = await fetchKupidNotices(id, password, type);
+  switch (type) {
+    case "Scholar":
+      return htmls.map(parseScholarInfo);
+    case "Notice":
+      return htmls.map(parseNoticeInfo);
+    case "Schedule":
+      return htmls.map(parseScheduleInfo);
+    default:
+      throw new Error("Invalid Type");
+  }
 }
